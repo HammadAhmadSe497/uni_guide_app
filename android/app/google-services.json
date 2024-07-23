@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "344607137409",
+    "project_id": "uni-guide-firebase",
+    "storage_bucket": "uni-guide-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344607137409:android:caacec22bee75c746b3780",
+        "android_client_info": {
+          "package_name": "com.example.uni_guide_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-dvKGKlc754xuhCzE6H_c6z5rhCBjy2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
