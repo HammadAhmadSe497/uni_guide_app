@@ -1,34 +1,63 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import '../../domain/entities/user.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:uni_guide_app/domain/entities/user.dart';
+import 'package:uni_guide_app/domain/entities/user.dart' as domain_user;
 import '../../domain/repositiories/auth_repo.dart';
-import '../data_sources/firebase_auth_datasource.dart';
-import '../models/user_model.dart';
 
-class AuthRepositoryImpl extends AuthRepository {
-  final FirebaseAuthDataSource _dataSource;
+class FirebaseAuthRepository implements AuthRepository {
+  final firebase.FirebaseAuth _firebaseAuth;
 
-  AuthRepositoryImpl(this._dataSource);
+  FirebaseAuthRepository({firebase.FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? firebase.FirebaseAuth.instance;
 
   @override
   Future<User?> signIn(String email, String password) async {
-    final firebase_auth.User? user = await _dataSource.signIn(email, password);
-    return user != null ? UserModel.fromFirebaseUser(user) : null;
+    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return _userFromFirebase(userCredential.user);
   }
 
   @override
   Future<User?> signUp(String email, String password) async {
-    final firebase_auth.User? user = await _dataSource.signUp(email, password);
-    return user != null ? UserModel.fromFirebaseUser(user) : null;
+    final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return _userFromFirebase(userCredential.user);
   }
 
   @override
   Future<void> signOut() async {
-    await _dataSource.signOut();
+    await _firebaseAuth.signOut();
+  }
+
+  // @override
+  // User? getCurrentUser() {
+  //   return _userFromFirebase(_firebaseAuth.currentUser);
+  // }
+
+  @override
+  Stream<User?> get user {
+    return _firebaseAuth.authStateChanges().map(_userFromFirebase);
+  }
+
+  User? _userFromFirebase(firebase.User? user) {
+    if (user == null) return null;
+    return User(
+      uid: user.uid,
+      email: user.email,
+    );
   }
 
   @override
-  User? getCurrentUser() {
-    final firebase_auth.User? user = _dataSource.getCurrentUser();
-    return user != null ? UserModel.fromFirebaseUser(user) : null;
+  Future<void> setUserData(domain_user.User? user) async {
+    if (user != null && _firebaseAuth.currentUser != null) {
+      await _firebaseAuth.currentUser!.updateProfile();
+      // Optionally, update email or other properties as needed
+    } else {
+      throw Exception('User not found');
+    }
   }
+
 }

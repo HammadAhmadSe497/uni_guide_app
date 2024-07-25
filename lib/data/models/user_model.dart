@@ -10,10 +10,10 @@ class UserModel extends User {
     email: email,
   );
 
-  factory UserModel.fromFirebaseUser(firebase_auth.User user) {
+  factory UserModel.fromFirebase(firebase_auth.User firebaseUser) {
     return UserModel(
-      uid: user.uid,
-      email: user.email ?? '',
+      uid: firebaseUser.uid,
+      email: firebaseUser.email ?? '',
     );
   }
 }
